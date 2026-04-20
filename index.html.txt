@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مستودع-تك | Ms-tik — مستودعاتك في كل مكان</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Syne:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════
+   CSS VARIABLES & RESET
+══════════════════════════════════════ */
+:root{
+  --bg:#07090f;
+  --s1:#0e1118;
+  --s2:#161b27;
+  --s3:#1e2435;
+  --b1:#232840;
+  --b2:#2e3550;
+  --ac:#5b8dee;
+  --ac2:#a855f7;
+  --ac3:#10d9a0;
+  --warn:#fbbf24;
+  --danger:#f43f5e;
+  --tx:#e2e6f3;
+  --tx2:#7e87a8;
+  --tx3:#3d4460;
+  --r:14px;
+  --mono:'JetBrains Mono',monospace;
+  --disp:'Syne',sans-serif;
+  --body:'IBM Plex Sans Arabic',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--b2);border-radius:99px}
+input,button,select{font-family:var(--body)}
+
+/* ══════════════════════════════════════
+   BACKGROUND
+══════════════════════════════════════ */
+.bg-fx{position:fixed;inset:0;z-index:0;pointer-events:none}
+.bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(91,141,238,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(91,141,238,.035) 1px,transparent 1px);background-size:44px 44px}
+.orb{position:absolute;border-radius:50%;filter:blur(140px)}
+.o1{width:680px;height:680px;background:rgba(91,141,238,.06);top:-220px;right:-160px}
+.o2{width:480px;height:480px;background:rgba(168,85,247,.045);bottom:-80px;left:-80px}
+.o3{width:260px;height:260px;background:rgba(16,217,160,.03);top:45%;left:35%}
+
+/* ══════════════════════════════════════
+   PAGES SYSTEM
+══════════════════════════════════════ */
+.page{display:none;position:relative;z-index:1}
+.page.active{display:flex}
+
+/* ══════════════════════════════════════
+   AUTH PAGES (LOGIN / REGISTER / OTP)
+══════════════════════════════════════ */
+.auth-page{
+  min-height:100vh;width:100%;
+  align-items:center;justify-content:center;padding:20px;
+}
+.auth-split{
+  display:grid;grid-template-columns:1fr 1fr;
+  max-width:960px;width:100%;
+  background:var(--s1);border:1px solid var(--b1);
+  border-radius:24px;overflow:hidden;
+  box-shadow:0 40px 120px rgba(0,0,0,.6);
+  animation:authIn .5s cubic-bezier(.4,0,.2,1);
+}
+@keyframes authIn{from{opacity:0;transform:scale(.96) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+/* Left panel — branding */
+.auth-brand{
+  background:linear-gradient(145deg,rgba(91,141,238,.12),rgba(168,85,247,.08));
+  border-left:1px solid var(--b1);
+  padding:48px 40px;display:flex;flex-direction:column;
+  justify-content:space-between;position:relative;overflow:hidden;
+}
+.auth-brand::before{
+  content:'';position:absolute;width:400px;height:400px;
+  background:radial-gradient(circle,rgba(91,141,238,.12),transparent 65%);
+  top:-100px;right:-100px;border-radius:50%;
+}
+.brand-top{}
+.brand-logo{display:flex;align-items:center;gap:12px;margin-bottom:36px}
+.brand-icon{
+  width:52px;height:52px;border-radius:15px;
+  background:linear-gradient(135deg,var(--ac),var(--ac2));
+  display:flex;align-items:center;justify-content:center;font-size:26px;
+  box-shadow:0 0 32px rgba(91,141,238,.4);
+}
+.brand-name{font-family:var(--disp);font-size:22px;font-weight:800;line-height:1.1}
+.brand-name .en{color:var(--ac);font-size:14px;display:block;font-weight:600;margin-top:2px;font-family:var(--mono)}
+.brand-headline{font-size:28px;font-weight:700;line-height:1.3;margin-bottom:16px}
+.brand-headline span{color:var(--ac)}
+.brand-sub{font-size:13px;color:var(--tx2);line-height:1.7}
+.brand-features{margin-top:32px;display:flex;flex-direction:column;gap:12px}
+.bfeat{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--tx2)}
+.bfeat .dot{width:6px;height:6px;border-radius:50%;background:var(--ac3);flex-shrink:0}
+.brand-stats{display:flex;gap:24px;margin-top:auto}
+.bstat{text-align:center}
+.bstat-val{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ac)}
+.bstat-lbl{font-size:10px;color:var(--tx3);margin-top:2px}
+
+/* Right panel — form */
+.auth-form-wrap{padding:44px 40px;display:flex;flex-direction:column;justify-content:center}
+.form-header{margin-bottom:28px}
+.form-title{font-family:var(--disp);font-size:22px;font-weight:800;margin-bottom:6px}
+.form-sub{font-size:12.5px;color:var(--tx2);line-height:1.6}
+
+/* Tab switcher */
+.auth-tabs{display:flex;background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:3px;margin-bottom:24px;gap:2px}
+.auth-tab{
+  flex:1;padding:8px;border-radius:7px;border:none;background:none;
+  color:var(--tx2);font-size:12.5px;font-family:var(--body);font-weight:500;
+  cursor:pointer;transition:all .2s;
+}
+.auth-tab.active{background:var(--s3);color:var(--tx);box-shadow:0 1px 4px rgba(0,0,0,.3)}
+
+/* Method toggle (email / phone) */
+.method-toggle{display:flex;gap:8px;margin-bottom:16px}
+.mtoggle{
+  flex:1;padding:9px 12px;border-radius:9px;border:1px solid var(--b1);
+  background:var(--s2);color:var(--tx2);font-size:12px;font-family:var(--body);
+  cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.mtoggle.active{border-color:var(--ac);background:rgba(91,141,238,.1);color:var(--ac)}
+
+/* Form fields */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11.5px;color:var(--tx2);margin-bottom:6px;font-weight:500}
+.field-wrap{position:relative}
+.field-wrap .ficon{
+  position:absolute;top:50%;transform:translateY(-50%);
+  font-size:16px;color:var(--tx3);pointer-events:none;
+}
+[dir="rtl"] .field-wrap .ficon{right:12px}
+[dir="ltr"] .field-wrap .ficon{left:12px}
+.field input,.field select{
+  width:100%;padding:11px 40px 11px 12px;
+  background:var(--s2);border:1px solid var(--b1);border-radius:10px;
+  color:var(--tx);font-size:13px;outline:none;transition:border-color .2s;
+}
+[dir="rtl"] .field input,[dir="rtl"] .field select{padding:11px 40px 11px 12px}
+[dir="ltr"] .field input,[dir="ltr"] .field select{padding:11px 12px 11px 40px}
+.field input::placeholder{color:var(--tx3)}
+.field input:focus,.field select:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(91,141,238,.12)}
+.field input.error{border-color:var(--danger)}
+.field .err-msg{font-size:10.5px;color:var(--danger);margin-top:4px;display:none}
+.field input.error+.ficon+.err-msg,.err-show{display:block!important}
+
+/* Phone prefix */
+.phone-row{display:flex;gap:8px}
+.phone-prefix{
+  padding:11px 10px;background:var(--s2);border:1px solid var(--b1);
+  border-radius:10px;color:var(--tx);font-size:13px;outline:none;
+  font-family:var(--mono);min-width:90px;transition:border-color .2s;
+}
+.phone-prefix:focus{border-color:var(--ac)}
+
+/* Submit btn */
+.submit-btn{
+  width:100%;padding:12px;border-radius:11px;border:none;
+  background:linear-gradient(135deg,var(--ac),var(--ac2));
+  color:#fff;font-size:14px;font-weight:600;font-family:var(--body);
+  cursor:pointer;transition:all .2s;margin-top:4px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  position:relative;overflow:hidden;
+}
+.submit-btn:hover{filter:brightness(1.1);box-shadow:0 0 24px rgba(91,141,238,.4)}
+.submit-btn:active{transform:scale(.98)}
+.submit-btn .loader{
+  width:18px;height:18px;border:2px solid rgba(255,255,255,.3);
+  border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Divider */
+.divider{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--tx3);font-size:11px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--b1)}
+
+/* Social login */
+.social-row{display:flex;gap:8px}
+.social-btn{
+  flex:1;padding:9px;border-radius:9px;border:1px solid var(--b1);
+  background:var(--s2);color:var(--tx2);font-size:12px;font-family:var(--body);
+  cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.social-btn:hover{border-color:var(--b2);color:var(--tx);background:var(--s3)}
+
+/* Switch link */
+.switch-link{text-align:center;margin-top:18px;font-size:12px;color:var(--tx2)}
+.switch-link a{color:var(--ac);cursor:pointer;text-decoration:none;font-weight:600}
+.switch-link a:hover{text-decoration:underline}
+
+/* ═══════════════════
+   OTP PAGE
+═══════════════════ */
+.otp-wrap{display:flex;flex-direction:column;align-items:center;text-align:center}
+.otp-icon{
+  width:70px;height:70px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(91,141,238,.2),rgba(168,85,247,.15));
+  border:1px solid rgba(91,141,238,.3);
+  display:flex;align-items:center;justify-content:center;font-size:32px;
+  margin:0 auto 20px;box-shadow:0 0 40px rgba(91,141,238,.2);
+}
+.otp-title{font-family:var(--disp);font-size:20px;font-weight:800;margin-bottom:6px}
+.otp-sub{font-size:12px;color:var(--tx2);line-height:1.6;margin-bottom:24px}
+.otp-target{color:var(--ac);font-weight:600;font-family:var(--mono);font-size:13px}
+
+/* OTP boxes */
+.otp-boxes{display:flex;gap:10px;justify-content:center;margin-bottom:20px;direction:ltr}
+.otp-box{
+  width:48px;height:56px;border-radius:12px;border:2px solid var(--b1);
+  background:var(--s2);color:var(--tx);font-size:22px;font-weight:700;
+  text-align:center;outline:none;font-family:var(--mono);
+  transition:all .2s;caret-color:var(--ac);
+}
+.otp-box:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(91,141,238,.15);background:var(--s3)}
+.otp-box.filled{border-color:var(--ac);background:rgba(91,141,238,.08)}
+.otp-box.success{border-color:var(--ac3);background:rgba(16,217,160,.08);color:var(--ac3)}
+.otp-box.error-box{border-color:var(--danger);animation:shake .3s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+/* Timer */
+.otp-timer{font-size:12px;color:var(--tx2);margin-bottom:16px}
+.otp-timer span{color:var(--ac);font-family:var(--mono);font-weight:600}
+.resend-btn{
+  background:none;border:none;color:var(--tx3);font-size:12px;
+  cursor:not-allowed;font-family:var(--body);
+}
+.resend-btn.active{color:var(--ac);cursor:pointer}
+.resend-btn.active:hover{text-decoration:underline}
+
+/* Success state */
+.success-check{
+  width:64px;height:64px;border-radius:50%;
+  background:rgba(16,217,160,.15);border:2px solid var(--ac3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;margin:0 auto 16px;
+  animation:popIn .4s cubic-bezier(.4,0,.2,1);
+}
+@keyframes popIn{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
+
+/* ══════════════════════════════════════
+   LANG / TOP BAR
+══════════════════════════════════════ */
+.topbar-auth{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  height:44px;background:rgba(7,9,15,.9);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--b1);
+  display:flex;align-items:center;justify-content:space-between;padding:0 20px;
+}
+.tba-logo{font-family:var(--disp);font-size:14px;font-weight:800;display:flex;align-items:center;gap:8px}
+.tba-logo .ico{font-size:18px}
+.tba-logo .ar{color:var(--tx)}
+.tba-logo .en{color:var(--ac)}
+.tba-right{display:flex;align-items:center;gap:8px}
+.lang-btn{
+  font-size:11px;font-family:var(--mono);font-weight:600;
+  padding:3px 10px;border-radius:6px;border:1px solid var(--b2);
+  background:transparent;color:var(--tx2);cursor:pointer;transition:all .2s;
+}
+.lang-btn.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+
+/* ══════════════════════════════════════
+   MAIN APP (DASHBOARD)
+══════════════════════════════════════ */
+.app-page{flex-direction:row;min-height:100vh}
+
+/* Sidebar */
+.sidebar{
+  width:252px;min-width:252px;background:var(--s1);
+  border-left:1px solid var(--b1);display:flex;flex-direction:column;
+  position:fixed;top:0;bottom:0;right:0;z-index:50;overflow:hidden;
+}
+[dir="ltr"] .sidebar{right:auto;left:0;border-left:none;border-right:1px solid var(--b1)}
+.sb-head{padding:16px 14px 12px;border-bottom:1px solid var(--b1)}
+.sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.sb-icon{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--ac),var(--ac2));
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  box-shadow:0 0 20px rgba(91,141,238,.35);
+}
+.sb-name{font-family:var(--disp);font-size:14px;font-weight:800}
+.sb-name .en{color:var(--ac);font-size:10px;font-family:var(--mono);display:block}
+.sb-user{
+  background:var(--s2);border:1px solid var(--b1);border-radius:10px;
+  padding:10px 12px;display:flex;align-items:center;gap:9px;
+}
+.sb-ava{
+  width:34px;height:34px;border-radius:9px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--ac),var(--ac2));
+  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;
+}
+.sb-uname{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-email{font-size:9.5px;color:var(--tx3);font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.online{width:7px;height:7px;border-radius:50%;background:var(--ac3);flex-shrink:0;animation:blink 2.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+
+.sb-storage{padding:8px 14px 6px}
+.sto-row{display:flex;justify-content:space-between;font-size:9.5px;color:var(--tx3);margin-bottom:4px}
+.sto-bar{height:3px;background:var(--b1);border-radius:99px;overflow:hidden}
+.sto-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--ac),var(--ac2));width:0;transition:width 1.2s ease}
+
+.nav{flex:1;overflow-y:auto;padding:6px 8px}
+.ns{font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:1.2px;padding:12px 8px 5px}
+.ni{
+  display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;
+  cursor:pointer;font-size:12.5px;color:var(--tx2);transition:all .15s;margin-bottom:1px;
+}
+.ni:hover{background:var(--s2);color:var(--tx)}
+.ni.active{background:rgba(91,141,238,.13);color:var(--ac)}
+.ni .ic{width:15px;text-align:center;font-size:14px;flex-shrink:0}
+.ni .nb{margin-right:auto;background:var(--ac2);color:#fff;font-size:9px;padding:1px 5px;border-radius:99px;font-family:var(--mono)}
+[dir="ltr"] .ni .nb{margin-right:unset;margin-left:auto}
+
+.sb-foot{padding:10px;border-top:1px solid var(--b1)}
+.logout-btn{
+  width:100%;padding:9px;border-radius:9px;border:1px solid rgba(244,63,94,.25);
+  background:rgba(244,63,94,.08);color:var(--danger);font-family:var(--body);
+  font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.logout-btn:hover{background:rgba(244,63,94,.15)}
+
+/* Main content */
+.main-content{
+  margin-right:252px;flex:1;display:flex;flex-direction:column;min-height:100vh;
+}
+[dir="ltr"] .main-content{margin-right:0;margin-left:252px}
+
+/* Top nav */
+.topnav{
+  height:54px;border-bottom:1px solid var(--b1);
+  display:flex;align-items:center;gap:10px;padding:0 18px;
+  background:rgba(7,9,15,.85);backdrop-filter:blur(16px);
+  position:sticky;top:0;z-index:40;flex-shrink:0;
+}
+.breadcrumb{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--tx2);flex:1}
+.breadcrumb .sep{color:var(--tx3)}
+.breadcrumb .cur{color:var(--tx);font-weight:600}
+.srchbox{
+  display:flex;align-items:center;gap:6px;background:var(--s2);
+  border:1px solid var(--b1);border-radius:8px;padding:6px 10px;width:200px;transition:border-color .2s;
+}
+.srchbox:focus-within{border-color:var(--ac)}
+.srchbox input{background:none;border:none;outline:none;color:var(--tx);font-family:var(--body);font-size:12px;width:100%}
+.srchbox input::placeholder{color:var(--tx3)}
+.ic-btn{
+  width:32px;height:32px;border-radius:7px;border:1px solid var(--b1);
+  background:var(--s2);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--tx2);font-size:13px;transition:all .15s;flex-shrink:0;position:relative;
+}
+.ic-btn:hover{border-color:var(--ac);color:var(--ac)}
+.notif-dot{position:absolute;width:6px;height:6px;background:var(--ac);border-radius:50%;top:5px;left:5px;border:2px solid var(--bg)}
+
+/* Dashboard content */
+.dash{padding:18px;flex:1}
+
+/* Welcome */
+.welcome{
+  background:linear-gradient(135deg,rgba(91,141,238,.1),rgba(168,85,247,.06));
+  border:1px solid rgba(91,141,238,.2);border-radius:var(--r);
+  padding:18px 22px;margin-bottom:18px;
+  display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden;
+}
+.welcome::before{content:'';position:absolute;top:-30px;right:-30px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(91,141,238,.14),transparent 70%)}
+.wt h2{font-family:var(--disp);font-size:17px;font-weight:700;margin-bottom:3px}
+.wt p{font-size:11.5px;color:var(--tx2)}
+.wa{display:flex;gap:7px}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:18px}
+.sc{
+  background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);
+  padding:14px 16px;position:relative;overflow:hidden;transition:all .2s;cursor:default;
+}
+.sc:hover{border-color:var(--ac);transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.3)}
+.sc::before{content:'';position:absolute;top:0;right:0;width:50px;height:50px;border-radius:0 14px 0 50px;opacity:.12}
+.sc:nth-child(1)::before{background:var(--ac)}
+.sc:nth-child(2)::before{background:var(--ac2)}
+.sc:nth-child(3)::before{background:var(--ac3)}
+.sc:nth-child(4)::before{background:var(--warn)}
+.si{font-size:18px;margin-bottom:8px}
+.sv{font-size:22px;font-weight:700;font-family:var(--mono);margin-bottom:2px}
+.sl{font-size:10.5px;color:var(--tx2)}
+.sch{font-size:9.5px;color:var(--ac3);margin-top:4px}
+
+/* Section */
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.st{font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:6px}
+.sa{display:flex;gap:6px}
+.btn{padding:7px 13px;border-radius:8px;border:none;font-family:var(--body);font-size:11.5px;font-weight:500;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px}
+.bp{background:var(--ac);color:#fff}.bp:hover{filter:brightness(1.1);box-shadow:0 0 16px rgba(91,141,238,.35)}
+.bg2{background:var(--s2);color:var(--tx2);border:1px solid var(--b1)}.bg2:hover{color:var(--tx);border-color:var(--ac)}
+
+/* Repos */
+.rg{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:18px}
+.rc{
+  background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);
+  padding:16px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
+}
+.rc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--ac),var(--ac2));transform:scaleX(0);transition:transform .3s;transform-origin:right}
+.rc:hover{border-color:var(--ac);transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.28)}
+.rc:hover::after{transform:scaleX(1)}
+.rc.nr{border-style:dashed;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:136px;color:var(--tx3)}
+.rc.nr:hover{color:var(--ac);border-color:var(--ac)}
+.rh2{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:7px}
+.ric{font-size:22px}
+.pb{font-size:9px;padding:2px 6px;border-radius:99px;font-weight:600;font-family:var(--mono);display:flex;align-items:center;gap:2px}
+.pb-pub{background:rgba(16,217,160,.12);color:var(--ac3)}
+.pb-prv{background:rgba(244,63,94,.12);color:var(--danger)}
+.pb-lnk{background:rgba(251,191,36,.12);color:var(--warn)}
+.rn{font-size:13px;font-weight:600;margin-bottom:4px}
+.rd{font-size:11px;color:var(--tx2);line-height:1.5;margin-bottom:10px}
+.rm{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--tx3);flex-wrap:wrap}
+
+/* Files table */
+.fw{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;margin-bottom:18px}
+.ft{width:100%;border-collapse:collapse}
+.ft th{padding:9px 13px;text-align:right;font-size:9.5px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.8px;background:var(--s2);border-bottom:1px solid var(--b1)}
+[dir="ltr"] .ft th{text-align:left}
+.ft td{padding:9px 13px;border-bottom:1px solid var(--b1);font-size:11.5px;vertical-align:middle}
+.ft tr:last-child td{border-bottom:none}
+.ft tbody tr{transition:background .1s}
+.ft tbody tr:hover td{background:rgba(91,141,238,.04)}
+.fnc{display:flex;align-items:center;gap:7px}
+.fic{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.fic.pdf{background:rgba(244,63,94,.12)}.fic.img{background:rgba(91,141,238,.12)}
+.fic.zip{background:rgba(251,191,36,.12)}.fic.doc{background:rgba(16,217,160,.12)}
+.fic.fld{background:rgba(168,85,247,.12)}.fic.vid{background:rgba(251,146,60,.12)}
+.fsz{color:var(--tx2);font-family:var(--mono);font-size:10px}
+.fdt{color:var(--tx2);font-size:10.5px}
+.fac{display:flex;gap:3px}
+.fa{width:24px;height:24px;border-radius:5px;border:1px solid var(--b1);background:none;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:var(--tx2);transition:all .12s}
+.fa:hover{background:var(--s2);color:var(--tx)}
+.fa.dl:hover{border-color:var(--danger);color:var(--danger)}
+.chip{font-size:9px;padding:2px 6px;border-radius:99px;border:1px solid var(--b1);color:var(--tx3);font-family:var(--mono)}
+
+/* Bottom grid */
+.bot{display:grid;grid-template-columns:1fr 285px;gap:11px}
+.panel{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:16px}
+.pt{font-size:12.5px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.ai{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--b1)}
+.ai:last-child{border-bottom:none}
+.ad{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.ad.up{background:var(--ac3)}.ad.sh{background:var(--ac)}.ad.cr{background:var(--ac2)}.ad.dl{background:var(--danger)}
+.at{font-size:11px;line-height:1.5;flex:1}.at strong{color:var(--tx);font-weight:600}
+.atm{font-size:9px;color:var(--tx3);font-family:var(--mono);margin-top:1px}
+
+.upz{border:2px dashed var(--b1);border-radius:9px;padding:18px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:12px}
+.upz:hover{border-color:var(--ac);background:rgba(91,141,238,.04)}
+.upz .ui{font-size:26px;margin-bottom:6px}
+.upz p{font-size:11px;color:var(--tx2)}
+.upz p strong{color:var(--ac)}
+
+.qr{display:flex;justify-content:space-between;align-items:center;font-size:11px;margin-bottom:3px}
+.ql{color:var(--tx2)}.qv{font-weight:600;font-family:var(--mono);font-size:10px}
+.qb{height:3px;background:var(--b1);border-radius:99px;overflow:hidden;margin-bottom:8px}
+.qbf{height:100%;border-radius:99px}
+
+.trow{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;margin-bottom:9px}
+.trow:last-child{margin-bottom:0}
+.tl{color:var(--tx2)}
+.tgl{width:32px;height:17px;border-radius:99px;background:var(--b1);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.tgl.on{background:var(--ac)}
+.tgl::after{content:'';position:absolute;width:11px;height:11px;border-radius:50%;background:#fff;top:3px;right:3px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.tgl.on::after{transform:translateX(-15px)}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--s2);border:1px solid var(--b2);border-radius:12px;
+  padding:12px 20px;font-size:12.5px;z-index:500;
+  display:flex;align-items:center;gap:8px;
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 8px 32px rgba(0,0,0,.5);white-space:nowrap;
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.success{border-color:rgba(16,217,160,.3)}
+.toast.error2{border-color:rgba(244,63,94,.3)}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.stats{animation:fadeUp .4s ease .05s both}
+.rg{animation:fadeUp .4s ease .1s both}
+.fw{animation:fadeUp .4s ease .15s both}
+.bot{animation:fadeUp .4s ease .2s both}
+
+/* Lang */
+.ar-only,.en-only{display:inherit}
+[data-lang="ar"] .en-only{display:none!important}
+[data-lang="en"] .ar-only{display:none!important}
+[data-lang="en"] .en-only{display:inherit!important}
+
+/* Password strength */
+.pw-strength{margin-top:6px;display:none}
+.pw-strength.show{display:block}
+.pw-bars{display:flex;gap:3px;margin-bottom:4px}
+.pw-bar{height:3px;border-radius:99px;flex:1;background:var(--b1);transition:background .3s}
+.pw-bar.weak{background:var(--danger)}
+.pw-bar.mid{background:var(--warn)}
+.pw-bar.strong{background:var(--ac3)}
+.pw-label{font-size:10px;color:var(--tx3)}
+
+/* Checkbox */
+.cb-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:14px}
+.cb-row input[type=checkbox]{accent-color:var(--ac);width:14px;height:14px;flex-shrink:0;margin-top:1px}
+.cb-row label{font-size:11.5px;color:var(--tx2);cursor:pointer}
+.cb-row label a{color:var(--ac)}
+</style>
+</head>
+<body>
+
+<!-- ════════════ BACKGROUND ════════════ -->
+<div class="bg-fx">
+  <div class="bg-grid"></div>
+  <div class="orb o1"></div>
+  <div class="orb o2"></div>
+  <div class="orb o3"></div>
+</div>
+
+<!-- ════════════ TOAST ════════════ -->
+<div class="toast" id="toast">✅ <span id="toast-msg"></span></div>
+
+<!-- ════════════ TOP BAR (AUTH) ════════════ -->
+<div class="topbar-auth" id="authBar">
+  <div class="tba-logo">
+    <span class="ico">☁</span>
+    <span class="ar-only"><span class="ar">مستودع-تك</span> <span class="en" style="font-size:11px">Ms-tik</span></span>
+    <span class="en-only" style="font-family:var(--disp);font-weight:800">Ms-tik <span style="color:var(--ac)">Vault</span></span>
+  </div>
+  <div class="tba-right">
+    <button class="lang-btn on" id="btn-ar" onclick="setLang('ar')">عربي</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     PAGE 1: LOGIN
+════════════════════════════════════════ -->
+<div class="page active auth-page" id="page-login" style="padding-top:64px">
+  <div class="auth-split">
+
+    <!-- Branding -->
+    <div class="auth-brand">
+      <div class="brand-top">
+        <div class="brand-logo">
+          <div class="brand-icon">☁</div>
+          <div>
+            <div class="brand-name">
+              <span class="ar-only">مستودع-تك</span>
+              <span class="en-only">Ms-tik Vault</span>
+              <span class="en">Ms-tik · v2.5</span>
+            </div>
+          </div>
+        </div>
+        <div class="brand-headline ar-only">ملفاتك<br><span>في أمان تام</span><br>من أي مكان</div>
+        <div class="brand-headline en-only">Your files,<br><span>always safe</span><br>from anywhere</div>
+        <div class="brand-sub ar-only">منصة تخزين سحابي ذكية تتيح لك تنظيم ملفاتك في مستودعات، ومشاركتها بأمان، والوصول إليها من أي جهاز في العالم.</div>
+        <div class="brand-sub en-only">Smart cloud storage platform to organize your files into repositories, share them securely, and access from any device.</div>
+        <div class="brand-features">
+          <div class="bfeat"><span class="dot"></span><span class="ar-only">تشفير كامل للملفات AES-256</span><span class="en-only">Full AES-256 file encryption</span></div>
+          <div class="bfeat"><span class="dot"></span><span class="ar-only">مشاركة بخصوصية كاملة</span><span class="en-only">Privacy-first file sharing</span></div>
+          <div class="bfeat"><span class="dot"></span><span class="ar-only">مزامنة فورية على كل أجهزتك</span><span class="en-only">Instant sync across all devices</span></div>
+          <div class="bfeat"><span class="dot"></span><span class="ar-only">تسجيل دخول آمن بكود OTP</span><span class="en-only">Secure OTP-based login</span></div>
+        </div>
+      </div>
+      <div class="brand-stats">
+        <div class="bstat"><div class="bstat-val">50K+</div><div class="bstat-lbl ar-only">مستخدم</div><div class="bstat-lbl en-only">Users</div></div>
+        <div class="bstat"><div class="bstat-val">5TB+</div><div class="bstat-lbl ar-only">ملفات محفوظة</div><div class="bstat-lbl en-only">Files stored</div></div>
+        <div class="bstat"><div class="bstat-val">99.9%</div><div class="bstat-lbl">Uptime</div></div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <div class="auth-form-wrap">
+      <div class="form-header">
+        <div class="form-title ar-only">مرحباً بعودتك 👋</div>
+        <div class="form-title en-only">Welcome back 👋</div>
+        <div class="form-sub ar-only">سجّل دخولك إلى حسابك في مستودع-تك</div>
+        <div class="form-sub en-only">Sign in to your Ms-tik account</div>
+      </div>
+
+      <!-- Method toggle -->
+      <div class="method-toggle">
+        <button class="mtoggle active" onclick="switchMethod('email','login')">
+          📧 <span class="ar-only">بريد إلكتروني</span><span class="en-only">Email</span>
+        </button>
+        <button class="mtoggle" onclick="switchMethod('phone','login')">
+          📱 <span class="ar-only">رقم الجوال</span><span class="en-only">Phone</span>
+        </button>
+      </div>
+
+      <!-- Email method -->
+      <div id="login-email">
+        <div class="field">
+          <label class="ar-only">البريد الإلكتروني</label>
+          <label class="en-only">Email address</label>
+          <div class="field-wrap">
+            <span class="ficon">📧</span>
+            <input type="email" id="login-email-input" placeholder="example@email.com" dir="ltr"/>
+          </div>
+        </div>
+        <div class="field">
+          <label class="ar-only">كلمة المرور</label>
+          <label class="en-only">Password</label>
+          <div class="field-wrap">
+            <span class="ficon">🔒</span>
+            <input type="password" id="login-pw" placeholder="••••••••" dir="ltr"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone method -->
+      <div id="login-phone" style="display:none">
+        <div class="field">
+          <label class="ar-only">رقم الجوال</label>
+          <label class="en-only">Phone number</label>
+          <div class="phone-row">
+            <select class="phone-prefix" dir="ltr">
+              <option>🇸🇦 +966</option>
+              <option>🇦🇪 +971</option>
+              <option>🇰🇼 +965</option>
+              <option>🇶🇦 +974</option>
+              <option>🇧🇭 +973</option>
+              <option>🇴🇲 +968</option>
+              <option>🇪🇬 +20</option>
+              <option>🇯🇴 +962</option>
+              <option>🇺🇸 +1</option>
+              <option>🇬🇧 +44</option>
+            </select>
+            <div class="field-wrap" style="flex:1">
+              <span class="ficon">📱</span>
+              <input type="tel" id="login-phone-input" placeholder="05xxxxxxxx" dir="ltr"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;margin-bottom:14px">
+        <a style="font-size:11.5px;color:var(--ac);cursor:pointer" onclick="goToPage('page-forgot')">
+          <span class="ar-only">نسيت كلمة المرور؟</span>
+          <span class="en-only">Forgot password?</span>
+        </a>
+      </div>
+
+      <button class="submit-btn" onclick="handleLogin()">
+        <span id="login-btn-txt">
+          <span class="ar-only">تسجيل الدخول</span>
+          <span class="en-only">Sign In</span>
+        </span>
+        <div class="loader" id="login-loader"></div>
+      </button>
+
+      <div class="divider"><span class="ar-only">أو</span><span class="en-only">or</span></div>
+      <div class="social-row">
+        <button class="social-btn">🌐 Google</button>
+        <button class="social-btn">🍎 Apple</button>
+        <button class="social-btn">👔 LinkedIn</button>
+      </div>
+
+      <div class="switch-link">
+        <span class="ar-only">ليس لديك حساب؟ <a onclick="goToPage('page-register')">إنشاء حساب جديد</a></span>
+        <span class="en-only">Don't have an account? <a onclick="goToPage('page-register')">Sign up</a></span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     PAGE 2: REGISTER
+════════════════════════════════════════ -->
+<div class="page auth-page" id="page-register" style="padding-top:64px">
+  <div class="auth-split">
+
+    <div class="auth-brand">
+      <div class="brand-top">
+        <div class="brand-logo">
+          <div class="brand-icon">☁</div>
+          <div>
+            <div class="brand-name">
+              <span class="ar-only">مستودع-تك</span>
+              <span class="en-only">Ms-tik</span>
+              <span class="en">Ms-tik · v2.5</span>
+            </div>
+          </div>
+        </div>
+        <div class="brand-headline ar-only">انضم إلى<br><span>مجتمع</span><br>مستودع-تك</div>
+        <div class="brand-headline en-only">Join the<br><span>Ms-tik</span><br>Community</div>
+        <div class="brand-sub ar-only">أكثر من 50,000 مستخدم يثقون بمستودع-تك لحفظ ملفاتهم ومشاركتها بأمان.</div>
+        <div class="brand-sub en-only">Over 50,000 users trust Ms-tik to store and share their files securely.</div>
+        <div class="brand-features">
+          <div class="bfeat"><span class="dot"></span><span class="ar-only">5 GB مجاناً عند التسجيل</span><span class="en-only">5 GB free on sign up</span></div>
+          <div class="bfeat"><span class="dot"></span><span class="ar-only">500 ملف كحد أقصى مجاناً</span><span class="en-only">500 files max — free tier</span></div>
+          <div class="bfeat"><span class="dot"></span><span class="ar-only">تحكم كامل بالخصوصية</span><span class="en-only">Full privacy control</span></div>
+          <div class="bfeat"><span class="dot"></span><span class="ar-only">لا بطاقة بنكية مطلوبة</span><span class="en-only">No credit card required</span></div>
+        </div>
+      </div>
+      <div class="brand-stats">
+        <div class="bstat"><div class="bstat-val">Free</div><div class="bstat-lbl ar-only">5 GB</div><div class="bstat-lbl en-only">5 GB</div></div>
+        <div class="bstat"><div class="bstat-val">256</div><div class="bstat-lbl">AES Bit</div></div>
+        <div class="bstat"><div class="bstat-val">24/7</div><div class="bstat-lbl">Support</div></div>
+      </div>
+    </div>
+
+    <div class="auth-form-wrap">
+      <div class="form-header">
+        <div class="form-title ar-only">إنشاء حساب جديد ✨</div>
+        <div class="form-title en-only">Create your account ✨</div>
+        <div class="form-sub ar-only">سجّل بالبريد الإلكتروني أو رقم جوالك</div>
+        <div class="form-sub en-only">Register with email or phone number</div>
+      </div>
+
+      <div class="method-toggle">
+        <button class="mtoggle active" onclick="switchMethod('email','reg')">📧 <span class="ar-only">بريد إلكتروني</span><span class="en-only">Email</span></button>
+        <button class="mtoggle" onclick="switchMethod('phone','reg')">📱 <span class="ar-only">رقم الجوال</span><span class="en-only">Phone</span></button>
+      </div>
+
+      <div class="field">
+        <label class="ar-only">الاسم الكامل</label>
+        <label class="en-only">Full name</label>
+        <div class="field-wrap">
+          <span class="ficon">👤</span>
+          <input type="text" id="reg-name" placeholder="أحمد الرشيدي / Ahmed Al-Rashidi"/>
+        </div>
+      </div>
+
+      <div id="reg-email-field">
+        <div class="field">
+          <label class="ar-only">البريد الإلكتروني</label>
+          <label class="en-only">Email address</label>
+          <div class="field-wrap">
+            <span class="ficon">📧</span>
+            <input type="email" id="reg-email" placeholder="example@email.com" dir="ltr"/>
+          </div>
+        </div>
+      </div>
+
+      <div id="reg-phone-field" style="display:none">
+        <div class="field">
+          <label class="ar-only">رقم الجوال</label>
+          <label class="en-only">Phone number</label>
+          <div class="phone-row">
+            <select class="phone-prefix" dir="ltr">
+              <option>🇸🇦 +966</option>
+              <option>🇦🇪 +971</option>
+              <option>🇰🇼 +965</option>
+              <option>🇶🇦 +974</option>
+              <option>🇧🇭 +973</option>
+              <option>🇴🇲 +968</option>
+              <option>🇪🇬 +20</option>
+              <option>🇯🇴 +962</option>
+              <option>🇺🇸 +1</option>
+              <option>🇬🇧 +44</option>
+            </select>
+            <div class="field-wrap" style="flex:1">
+              <span class="ficon">📱</span>
+              <input type="tel" id="reg-phone" placeholder="05xxxxxxxx" dir="ltr"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="ar-only">كلمة المرور</label>
+        <label class="en-only">Password</label>
+        <div class="field-wrap">
+          <span class="ficon">🔒</span>
+          <input type="password" id="reg-pw" placeholder="••••••••" dir="ltr" oninput="checkPwStrength(this)"/>
+        </div>
+        <div class="pw-strength" id="pw-str">
+          <div class="pw-bars">
+            <div class="pw-bar" id="pb1"></div>
+            <div class="pw-bar" id="pb2"></div>
+            <div class="pw-bar" id="pb3"></div>
+            <div class="pw-bar" id="pb4"></div>
+          </div>
+          <div class="pw-label" id="pw-lbl"></div>
+        </div>
+      </div>
+
+      <div class="cb-row">
+        <input type="checkbox" id="terms" />
+        <label for="terms">
+          <span class="ar-only">أوافق على <a href="#">شروط الاستخدام</a> و<a href="#">سياسة الخصوصية</a></span>
+          <span class="en-only">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
+        </label>
+      </div>
+
+      <button class="submit-btn" onclick="handleRegister()">
+        <span id="reg-btn-txt">
+          <span class="ar-only">إنشاء الحساب وإرسال الكود</span>
+          <span class="en-only">Create Account & Send Code</span>
+        </span>
+        <div class="loader" id="reg-loader"></div>
+      </button>
+
+      <div class="switch-link">
+        <span class="ar-only">لديك حساب بالفعل؟ <a onclick="goToPage('page-login')">تسجيل الدخول</a></span>
+        <span class="en-only">Already have an account? <a onclick="goToPage('page-login')">Sign in</a></span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     PAGE 3: OTP VERIFICATION
+════════════════════════════════════════ -->
+<div class="page auth-page" id="page-otp" style="padding-top:64px">
+  <div class="auth-split" style="max-width:700px">
+
+    <div class="auth-brand">
+      <div class="brand-top">
+        <div class="brand-logo">
+          <div class="brand-icon">🔐</div>
+          <div>
+            <div class="brand-name">
+              <span class="ar-only">التحقق الآمن</span>
+              <span class="en-only">Secure Verify</span>
+              <span class="en">Ms-tik · OTP</span>
+            </div>
+          </div>
+        </div>
+        <div class="brand-headline ar-only">خطوة<br><span>أمان</span><br>إضافية</div>
+        <div class="brand-headline en-only">Extra<br><span>Security</span><br>Step</div>
+        <div class="brand-sub ar-only">نحن نستخدم رمز التحقق لحماية حسابك من الوصول غير المصرح به.</div>
+        <div class="brand-sub en-only">We use OTP codes to protect your account from unauthorized access.</div>
+        <div class="brand-features">
+          <div class="bfeat"><span class="dot"></span><span class="ar-only">الكود صالح لمدة 10 دقائق فقط</span><span class="en-only">Code valid for 10 minutes only</span></div>
+          <div class="bfeat"><span class="dot"></span><span class="ar-only">لا تشارك الكود مع أحد</span><span class="en-only">Never share your code</span></div>
+          <div class="bfeat"><span class="dot"></span><span class="ar-only">يمكنك إعادة الإرسال بعد 60 ثانية</span><span class="en-only">Resend available after 60s</span></div>
+        </div>
+      </div>
+      <div class="brand-stats">
+        <div class="bstat"><div class="bstat-val">6</div><div class="bstat-lbl ar-only">خانات التحقق</div><div class="bstat-lbl en-only">OTP Digits</div></div>
+        <div class="bstat"><div class="bstat-val">10m</div><div class="bstat-lbl ar-only">صلاحية الكود</div><div class="bstat-lbl en-only">Code Expiry</div></div>
+      </div>
+    </div>
+
+    <div class="auth-form-wrap">
+      <div class="otp-wrap" id="otp-normal-view">
+        <div class="otp-icon">🔐</div>
+        <div class="otp-title ar-only">أدخل رمز التحقق</div>
+        <div class="otp-title en-only">Enter Verification Code</div>
+        <div class="otp-sub">
+          <span class="ar-only">أرسلنا رمزاً مكوناً من 6 أرقام إلى</span>
+          <span class="en-only">We sent a 6-digit code to</span>
+          <br><span class="otp-target" id="otp-destination">user@example.com</span>
+        </div>
+
+        <div class="otp-boxes" id="otp-boxes">
+          <input class="otp-box" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]*" onkeyup="otpNav(this,0)" oninput="otpFill(this)"/>
+          <input class="otp-box" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]*" onkeyup="otpNav(this,1)" oninput="otpFill(this)"/>
+          <input class="otp-box" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]*" onkeyup="otpNav(this,2)" oninput="otpFill(this)"/>
+          <input class="otp-box" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]*" onkeyup="otpNav(this,3)" oninput="otpFill(this)"/>
+          <input class="otp-box" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]*" onkeyup="otpNav(this,4)" oninput="otpFill(this)"/>
+          <input class="otp-box" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]*" onkeyup="otpNav(this,5)" oninput="otpFill(this)"/>
+        </div>
+
+        <div class="otp-timer ar-only">
+          انتهاء الصلاحية خلال: <span id="timer">01:00</span>
+        </div>
+        <div class="otp-timer en-only">
+          Expires in: <span id="timer2">01:00</span>
+        </div>
+
+        <button class="submit-btn" style="width:100%;margin-bottom:12px" onclick="verifyOTP()">
+          <span class="ar-only">تحقق وادخل</span>
+          <span class="en-only">Verify & Enter</span>
+          <div class="loader" id="otp-loader"></div>
+        </button>
+
+        <button class="resend-btn" id="resend-btn" onclick="resendOTP()">
+          <span class="ar-only">إعادة إرسال الكود</span>
+          <span class="en-only">Resend code</span>
+        </button>
+
+        <div style="margin-top:16px">
+          <a style="font-size:11.5px;color:var(--tx2);cursor:pointer" onclick="goToPage('page-login')">
+            ← <span class="ar-only">العودة لتسجيل الدخول</span>
+            <span class="en-only">Back to login</span>
+          </a>
+        </div>
+
+        <!-- Demo hint -->
+        <div style="margin-top:16px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);border-radius:8px;padding:10px 14px;font-size:11px;color:var(--warn);text-align:center">
+          🧪 <span class="ar-only">للتجربة: الكود هو <strong>1 2 3 4 5 6</strong></span>
+          <span class="en-only">Demo: Enter code <strong>1 2 3 4 5 6</strong></span>
+        </div>
+      </div>
+
+      <!-- Success state -->
+      <div class="otp-wrap" id="otp-success-view" style="display:none">
+        <div class="success-check">✅</div>
+        <div class="otp-title ar-only">تم التحقق بنجاح!</div>
+        <div class="otp-title en-only">Verified Successfully!</div>
+        <div class="otp-sub ar-only">جارٍ تحميل حسابك في مستودع-تك...</div>
+        <div class="otp-sub en-only">Loading your Ms-tik account...</div>
+        <div style="width:48px;height:48px;border:3px solid var(--b1);border-top-color:var(--ac3);border-radius:50%;animation:spin .7s linear infinite;margin:16px auto"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     PAGE 4: FORGOT PASSWORD
+════════════════════════════════════════ -->
+<div class="page auth-page" id="page-forgot" style="padding-top:64px">
+  <div class="auth-split" style="max-width:700px">
+    <div class="auth-brand">
+      <div class="brand-top">
+        <div class="brand-logo">
+          <div class="brand-icon">🔑</div>
+          <div><div class="brand-name"><span class="ar-only">استعادة كلمة المرور</span><span class="en-only">Password Reset</span><span class="en">Ms-tik · Reset</span></div></div>
+        </div>
+        <div class="brand-headline ar-only">استعد<br><span>حسابك</span><br>بسهولة</div>
+        <div class="brand-headline en-only">Recover<br><span>your</span><br>account</div>
+        <div class="brand-sub ar-only">سنرسل لك رمز تحقق لإعادة تعيين كلمة المرور.</div>
+        <div class="brand-sub en-only">We'll send you a verification code to reset your password.</div>
+      </div>
+    </div>
+    <div class="auth-form-wrap">
+      <div class="form-header">
+        <div class="form-title ar-only">نسيت كلمة المرور؟ 🔑</div>
+        <div class="form-title en-only">Forgot password? 🔑</div>
+        <div class="form-sub ar-only">أدخل بريدك أو جوالك وسنرسل لك رمز الاستعادة</div>
+        <div class="form-sub en-only">Enter your email or phone and we'll send a reset code</div>
+      </div>
+      <div class="method-toggle">
+        <button class="mtoggle active" onclick="switchMethod('email','forgot')">📧 <span class="ar-only">البريد الإلكتروني</span><span class="en-only">Email</span></button>
+        <button class="mtoggle" onclick="switchMethod('phone','forgot')">📱 <span class="ar-only">الجوال</span><span class="en-only">Phone</span></button>
+      </div>
+      <div id="forgot-email-field">
+        <div class="field">
+          <label class="ar-only">البريد الإلكتروني</label>
+          <label class="en-only">Email</label>
+          <div class="field-wrap">
+            <span class="ficon">📧</span>
+            <input type="email" id="forgot-email" placeholder="example@email.com" dir="ltr"/>
+          </div>
+        </div>
+      </div>
+      <div id="forgot-phone-field" style="display:none">
+        <div class="field">
+          <label class="ar-only">رقم الجوال</label><label class="en-only">Phone</label>
+          <div class="phone-row">
+            <select class="phone-prefix" dir="ltr"><option>🇸🇦 +966</option><option>🇦🇪 +971</option><option>🇺🇸 +1</option></select>
+            <div class="field-wrap" style="flex:1"><span class="ficon">📱</span><input type="tel" placeholder="05xxxxxxxx" dir="ltr"/></div>
+          </div>
+        </div>
+      </div>
+      <button class="submit-btn" onclick="handleForgot()">
+        <span class="ar-only">إرسال رمز الاستعادة</span>
+        <span class="en-only">Send Reset Code</span>
+      </button>
+      <div class="switch-link" style="margin-top:14px">
+        <a onclick="goToPage('page-login')">← <span class="ar-only">العودة لتسجيل الدخول</span><span class="en-only">Back to login</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     PAGE 5: DASHBOARD
+════════════════════════════════════════ -->
+<div class="page app-page" id="page-dash">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sb-head">
+      <div class="sb-logo">
+        <div class="sb-icon">☁</div>
+        <div class="sb-name">
+          <span class="ar-only">مستودع-تك</span><span class="en-only">Ms-tik</span>
+          <span class="en">Ms-tik · v2.5</span>
+        </div>
+      </div>
+      <div class="sb-user">
+        <div class="sb-ava" id="dash-ava">أح</div>
+        <div style="flex:1;min-width:0">
+          <div class="sb-uname" id="dash-name">أحمد الرشيدي</div>
+          <div class="sb-email" id="dash-contact">ahmed@email.com</div>
+        </div>
+        <div class="online"></div>
+      </div>
+    </div>
+
+    <div class="sb-storage">
+      <div class="sto-row"><span class="ar-only">المساحة</span><span class="en-only">Storage</span><span>2.1 / 5 GB</span></div>
+      <div class="sto-bar"><div class="sto-fill" id="sto-fill"></div></div>
+    </div>
+
+    <nav class="nav">
+      <div class="ns ar-only">الرئيسية</div><div class="ns en-only">MAIN</div>
+      <div class="ni active" onclick="setNi(this)"><span class="ic">🏠</span><span class="ar-only">لوحة التحكم</span><span class="en-only">Dashboard</span></div>
+      <div class="ni" onclick="setNi(this)"><span class="ic">🗄️</span><span class="ar-only">مستودعاتي</span><span class="en-only">My Repos</span><span class="nb">7</span></div>
+      <div class="ni" onclick="setNi(this)"><span class="ic">📁</span><span class="ar-only">جميع الملفات</span><span class="en-only">All Files</span></div>
+      <div class="ni" onclick="setNi(this)"><span class="ic">⭐</span><span class="ar-only">المفضلة</span><span class="en-only">Favorites</span></div>
+      <div class="ni" onclick="setNi(this)"><span class="ic">🕒</span><span class="ar-only">الأخيرة</span><span class="en-only">Recent</span></div>
+
+      <div class="ns ar-only">المشاركة</div><div class="ns en-only">SHARING</div>
+      <div class="ni" onclick="setNi(this)"><span class="ic">🌍</span><span class="ar-only">الملفات العامة</span><span class="en-only">Public Files</span></div>
+      <div class="ni" onclick="setNi(this)"><span class="ic">🔗</span><span class="ar-only">الروابط</span><span class="en-only">Links</span></div>
+      <div class="ni" onclick="setNi(this)"><span class="ic">👥</span><span class="ar-only">مشاركة معي</span><span class="en-only">Shared w/ Me</span><span class="nb">3</span></div>
+
+      <div class="ns ar-only">الإدارة</div><div class="ns en-only">ADMIN</div>
+      <div class="ni" onclick="setNi(this)"><span class="ic">👤</span><span class="ar-only">إدارة المستخدمين</span><span class="en-only">Users</span></div>
+      <div class="ni" onclick="setNi(this)"><span class="ic">📊</span><span class="ar-only">التقارير</span><span class="en-only">Analytics</span></div>
+      <div class="ni" onclick="setNi(this)"><span class="ic">⚙️</span><span class="ar-only">الإعدادات</span><span class="en-only">Settings</span></div>
+    </nav>
+
+    <div class="sb-foot">
+      <button class="logout-btn" onclick="logout()">
+        🚪 <span class="ar-only">تسجيل الخروج</span><span class="en-only">Sign Out</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <div class="main-content">
+    <header class="topnav">
+      <div class="breadcrumb">
+        <span class="ar-only">مستودع-تك</span><span class="en-only">Ms-tik</span>
+        <span class="sep">›</span>
+        <span class="cur ar-only">لوحة التحكم</span><span class="cur en-only">Dashboard</span>
+      </div>
+      <div class="srchbox">
+        <span style="color:var(--tx3);font-size:13px">🔍</span>
+        <input type="text" class="ar-only" placeholder="ابحث في ملفاتك..."/>
+        <input type="text" class="en-only" placeholder="Search files..."/>
+      </div>
+      <div style="position:relative"><div class="ic-btn">🔔<div class="notif-dot"></div></div></div>
+      <div class="ic-btn">⊞</div>
+      <div style="display:flex;gap:5px">
+        <button class="lang-btn on" id="dash-ar" onclick="setLang('ar')">عربي</button>
+        <button class="lang-btn" id="dash-en" onclick="setLang('en')">EN</button>
+      </div>
+    </header>
+
+    <div class="dash">
+      <!-- Welcome -->
+      <div class="welcome">
+        <div class="wt">
+          <h2 class="ar-only">مرحباً، <span id="welcome-name">أحمد</span>! 👋 مستودعاتك بأمان</h2>
+          <h2 class="en-only">Welcome, <span id="welcome-name2">Ahmed</span>! 👋 Your vault is safe</h2>
+          <p class="ar-only">تم تسجيل دخولك بنجاح ✅ · 143 ملف · 7 مستودعات</p>
+          <p class="en-only">Signed in successfully ✅ · 143 files · 7 repos</p>
+        </div>
+        <div class="wa">
+          <button class="btn bg2"><span class="ar-only">🚀 نشر مجاني</span><span class="en-only">🚀 Free Deploy</span></button>
+          <button class="btn bp">＋ <span class="ar-only">مستودع جديد</span><span class="en-only">New Repo</span></button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats">
+        <div class="sc"><div class="si">📦</div><div class="sv" style="color:var(--ac)">7</div><div class="sl ar-only">مستودعات نشطة</div><div class="sl en-only">Active Repos</div><div class="sch">↑ 2 <span class="ar-only">هذا الشهر</span><span class="en-only">this month</span></div></div>
+        <div class="sc"><div class="si">📄</div><div class="sv" style="color:var(--ac2)">143</div><div class="sl ar-only">إجمالي الملفات</div><div class="sl en-only">Total Files</div><div class="sch">↑ 24 <span class="ar-only">هذا الأسبوع</span><span class="en-only">this week</span></div></div>
+        <div class="sc"><div class="si">🌍</div><div class="sv" style="color:var(--ac3)">38</div><div class="sl ar-only">ملفات عامة</div><div class="sl en-only">Public Files</div><div class="sch">↑ 5</div></div>
+        <div class="sc"><div class="si">💾</div><div class="sv" style="color:var(--warn)">2.1</div><div class="sl ar-only">GB مستخدمة</div><div class="sl en-only">GB Used</div><div class="sch ar-only">من 5 GB</div><div class="sch en-only">of 5 GB</div></div>
+      </div>
+
+      <!-- Repos -->
+      <div class="sh">
+        <div class="st">🗄️ <span class="ar-only">المستودعات الأخيرة</span><span class="en-only">Recent Repositories</span></div>
+        <div class="sa">
+          <button class="btn bg2"><span class="ar-only">عرض الكل</span><span class="en-only">View All</span></button>
+          <button class="btn bp">＋ <span class="ar-only">جديد</span><span class="en-only">New</span></button>
+        </div>
+      </div>
+      <div class="rg">
+        <div class="rc"><div class="rh2"><div class="ric">📊</div><div class="pb pb-prv">🔒 <span class="ar-only">خاص</span><span class="en-only">Private</span></div></div><div class="rn ar-only">مشروع العمل 2025</div><div class="rn en-only">Work Project 2025</div><div class="rd ar-only">ملفات وتقارير المشروع الرئيسي، التصاميم والوثائق</div><div class="rd en-only">Main project files, designs and technical docs</div><div class="rm"><span>📄 42</span><span>💾 840 MB</span><span>🕒 1h</span></div></div>
+        <div class="rc"><div class="rh2"><div class="ric">🎨</div><div class="pb pb-pub">🌍 <span class="ar-only">عام</span><span class="en-only">Public</span></div></div><div class="rn ar-only">مكتبة التصاميم</div><div class="rn en-only">Design Library</div><div class="rd ar-only">ملفات Figma والصور المرجعية للمشاريع الإبداعية</div><div class="rd en-only">Figma files and reference images for creative projects</div><div class="rm"><span>📄 67</span><span>💾 1.2 GB</span><span>👁 234</span></div></div>
+        <div class="rc"><div class="rh2"><div class="ric">📚</div><div class="pb pb-lnk">🔗 <span class="ar-only">بالرابط</span><span class="en-only">Link</span></div></div><div class="rn ar-only">المستندات الشخصية</div><div class="rn en-only">Personal Docs</div><div class="rd ar-only">وثائق رسمية وصور شخصية مؤرشفة</div><div class="rd en-only">Official documents and personal archived photos</div><div class="rm"><span>📄 18</span><span>💾 120 MB</span><span>🔗 3</span></div></div>
+        <div class="rc"><div class="rh2"><div class="ric">💻</div><div class="pb pb-prv">🔒 <span class="ar-only">خاص</span><span class="en-only">Private</span></div></div><div class="rn ar-only">أكواد المشاريع</div><div class="rn en-only">Dev Backups</div><div class="rd ar-only">نسخ احتياطية من المشاريع البرمجية</div><div class="rd en-only">Code backups, scripts and config files</div><div class="rm"><span>📄 9</span><span>💾 45 MB</span><span>🕒 <span class="ar-only">أمس</span><span class="en-only">Yesterday</span></span></div></div>
+        <div class="rc"><div class="rh2"><div class="ric">🎵</div><div class="pb pb-pub">🌍 <span class="ar-only">عام</span><span class="en-only">Public</span></div></div><div class="rn ar-only">أرشيف الموسيقى</div><div class="rn en-only">Music Archive</div><div class="rd ar-only">ملفات صوتية وبودكاست مفتوحة المصدر</div><div class="rd en-only">Audio files and podcast episodes, open license</div><div class="rm"><span>📄 7</span><span>💾 320 MB</span><span>👁 892</span></div></div>
+        <div class="rc nr">
+          <div style="font-size:26px;margin-bottom:6px">＋</div>
+          <div style="font-size:12.5px;font-weight:600;margin-bottom:3px"><span class="ar-only">مستودع جديد</span><span class="en-only">New Repo</span></div>
+          <div style="font-size:10.5px"><span class="ar-only">نظّم ملفاتك</span><span class="en-only">Organize files</span></div>
+        </div>
+      </div>
+
+      <!-- Files -->
+      <div class="sh">
+        <div class="st">📄 <span class="ar-only">الملفات الأخيرة</span><span class="en-only">Recent Files</span></div>
+        <div class="sa"><button class="btn bg2">🔽 <span class="ar-only">فرز</span><span class="en-only">Sort</span></button><button class="btn bg2">⊞</button></div>
+      </div>
+      <div class="fw">
+        <table class="ft">
+          <thead><tr>
+            <th><span class="ar-only">الاسم</span><span class="en-only">Name</span></th>
+            <th><span class="ar-only">الحجم</span><span class="en-only">Size</span></th>
+            <th><span class="ar-only">النوع</span><span class="en-only">Type</span></th>
+            <th><span class="ar-only">الخصوصية</span><span class="en-only">Privacy</span></th>
+            <th><span class="ar-only">التاريخ</span><span class="en-only">Date</span></th>
+            <th><span class="ar-only">إجراءات</span><span class="en-only">Actions</span></th>
+          </tr></thead>
+          <tbody>
+            <tr><td><div class="fnc"><div class="fic fld">📁</div><span class="ar-only">مجلد المشاريع</span><span class="en-only">Projects Folder</span></div></td><td class="fsz">—</td><td><span class="chip">DIR</span></td><td><span class="pb pb-prv">🔒 <span class="ar-only">خاص</span><span class="en-only">Priv</span></span></td><td class="fdt"><span class="ar-only">اليوم</span><span class="en-only">Today</span></td><td><div class="fac"><button class="fa">📂</button><button class="fa">🔗</button><button class="fa dl">🗑️</button></div></td></tr>
+            <tr><td><div class="fnc"><div class="fic pdf">📕</div><span>تقرير_Q1_2025.pdf</span></div></td><td class="fsz">4.2 MB</td><td><span class="chip">PDF</span></td><td><span class="pb pb-prv">🔒</span></td><td class="fdt"><span class="ar-only">أمس</span><span class="en-only">Yesterday</span></td><td><div class="fac"><button class="fa">⬇️</button><button class="fa">🔗</button><button class="fa dl">🗑️</button></div></td></tr>
+            <tr><td><div class="fnc"><div class="fic img">🖼️</div><span>banner_v3.png</span></div></td><td class="fsz">1.8 MB</td><td><span class="chip">PNG</span></td><td><span class="pb pb-pub">🌍</span></td><td class="fdt">12 Jan</td><td><div class="fac"><button class="fa">👁</button><button class="fa">🔗</button><button class="fa dl">🗑️</button></div></td></tr>
+            <tr><td><div class="fnc"><div class="fic zip">📦</div><span>backup_jan.zip</span></div></td><td class="fsz">234 MB</td><td><span class="chip">ZIP</span></td><td><span class="pb pb-lnk">🔗</span></td><td class="fdt">10 Jan</td><td><div class="fac"><button class="fa">⬇️</button><button class="fa">🔗</button><button class="fa dl">🗑️</button></div></td></tr>
+            <tr><td><div class="fnc"><div class="fic vid">🎬</div><span>intro.mp4</span></div></td><td class="fsz">88 MB</td><td><span class="chip">MP4</span></td><td><span class="pb pb-pub">🌍</span></td><td class="fdt">5 Jan</td><td><div class="fac"><button class="fa">▶️</button><button class="fa">🔗</button><button class="fa dl">🗑️</button></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Bottom -->
+      <div class="bot">
+        <div class="panel">
+          <div class="pt">⚡ <span class="ar-only">سجل النشاط</span><span class="en-only">Activity Log</span></div>
+          <div class="ai"><div class="ad up"></div><div><div class="at ar-only"><strong>رُفع</strong> تقرير_Q1_2025.pdf إلى مستودع العمل</div><div class="at en-only"><strong>Uploaded</strong> Q1_2025_report.pdf to Work Repo</div><div class="atm ar-only">منذ 32 دقيقة</div><div class="atm en-only">32 min ago</div></div></div>
+          <div class="ai"><div class="ad sh"></div><div><div class="at ar-only"><strong>مُشارك</strong> banner_v3.png مع الجميع</div><div class="at en-only"><strong>Shared</strong> banner_v3.png publicly</div><div class="atm ar-only">منذ ساعتين</div><div class="atm en-only">2 hours ago</div></div></div>
+          <div class="ai"><div class="ad cr"></div><div><div class="at ar-only"><strong>أُنشئ</strong> مستودع "أرشيف الموسيقى"</div><div class="at en-only"><strong>Created</strong> "Music Archive" repo</div><div class="atm ar-only">أمس 18:44</div><div class="atm en-only">Yesterday 18:44</div></div></div>
+          <div class="ai"><div class="ad dl"></div><div><div class="at ar-only"><strong>حُذف</strong> draft_old.psd</div><div class="at en-only"><strong>Deleted</strong> draft_old.psd</div><div class="atm ar-only">أمس 11:20</div><div class="atm en-only">Yesterday 11:20</div></div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div class="panel" style="padding:13px">
+            <div class="upz">
+              <div class="ui">☁️</div>
+              <p class="ar-only">اسحب هنا أو <strong>اضغط للرفع</strong></p>
+              <p class="en-only">Drop here or <strong>click to upload</strong></p>
+              <p style="font-size:9.5px;color:var(--tx3);margin-top:3px">Max 100MB</p>
+            </div>
+            <div class="qr"><span class="ql ar-only">الملفات</span><span class="ql en-only">Files</span><span class="qv">143/500</span></div>
+            <div class="qb"><div class="qbf" style="width:28%;background:var(--ac)"></div></div>
+            <div class="qr"><span class="ql ar-only">المساحة</span><span class="ql en-only">Storage</span><span class="qv">2.1/5 GB</span></div>
+            <div class="qb"><div class="qbf" style="width:42%;background:var(--ac2)"></div></div>
+          </div>
+          <div class="panel" style="padding:13px">
+            <div class="pt" style="margin-bottom:10px">⚙️ <span class="ar-only">إعدادات</span><span class="en-only">Settings</span></div>
+            <div class="trow"><span class="tl ar-only">مشاركة تلقائية</span><span class="tl en-only">Auto share</span><div class="tgl" onclick="this.classList.toggle('on')"></div></div>
+            <div class="trow"><span class="tl ar-only">إشعارات</span><span class="tl en-only">Notifications</span><div class="tgl on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="trow"><span class="tl ar-only">مزامنة تلقائية</span><span class="tl en-only">Auto sync</span><div class="tgl on" onclick="this.classList.toggle('on')"></div></div>
+            <div class="trow"><span class="tl ar-only">نسخ احتياطي</span><span class="tl en-only">Auto backup</span><div class="tgl" onclick="this.classList.toggle('on')"></div></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /dash -->
+  </div><!-- /main-content -->
+</div><!-- /page-dash -->
+
+<!-- ════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════ -->
+<script>
+/* ── State ── */
+let currentLang = 'ar';
+let currentMethod = { login:'email', reg:'email', forgot:'email' };
+let timerInterval = null;
+let timerSecs = 60;
+let otpResendAllowed = false;
+let userInfo = { name:'', contact:'' };
+
+/* ── Page navigation ── */
+function goToPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  const authBar = document.getElementById('authBar');
+  authBar.style.display = id === 'page-dash' ? 'none' : 'flex';
+}
+
+/* ── Lang ── */
+function setLang(lang){
+  currentLang = lang;
+  document.documentElement.setAttribute('data-lang', lang);
+  document.documentElement.setAttribute('dir', lang==='ar'?'rtl':'ltr');
+  document.documentElement.setAttribute('lang', lang);
+  ['btn-ar','btn-en','dash-ar','dash-en'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.classList.toggle('on', el.id.endsWith(lang==='ar'?'ar':'en'))}
+  });
+  updateTimerDisplay();
+}
+
+/* ── Method toggle ── */
+function switchMethod(method, form){
+  currentMethod[form] = method;
+  const prefix = form === 'login' ? 'login' : form === 'reg' ? 'reg' : 'forgot';
+  const emailEl = document.getElementById(prefix + (form==='login'?'-email':'reg'==='reg'?'-email-field':'forgot'==='forgot'?'-email-field':'-email'));
+  // Simpler direct IDs
+  const ids = {
+    login: { email:'login-email', phone:'login-phone' },
+    reg:   { email:'reg-email-field', phone:'reg-phone-field' },
+    forgot:{ email:'forgot-email-field', phone:'forgot-phone-field' }
+  };
+  document.getElementById(ids[form].email).style.display = method==='email'?'block':'none';
+  document.getElementById(ids[form].phone).style.display = method==='phone'?'block':'none';
+
+  // Update toggle buttons
+  const btns = document.querySelectorAll(`#page-${form==='login'?'login':form==='reg'?'register':'forgot'} .mtoggle`);
+  btns.forEach((b,i)=>b.classList.toggle('active', (i===0&&method==='email')||(i===1&&method==='phone')));
+}
+
+/* ── Password strength ── */
+function checkPwStrength(input){
+  const pw = input.value;
+  const str = document.getElementById('pw-str');
+  const lbl = document.getElementById('pw-lbl');
+  str.classList.toggle('show', pw.length > 0);
+  if(!pw.length) return;
+  let score = 0;
+  if(pw.length >= 6) score++;
+  if(pw.length >= 10) score++;
+  if(/[A-Z]/.test(pw) && /[a-z]/.test(pw)) score++;
+  if(/[0-9]/.test(pw) && /[^a-zA-Z0-9]/.test(pw)) score++;
+  const bars = [document.getElementById('pb1'),document.getElementById('pb2'),document.getElementById('pb3'),document.getElementById('pb4')];
+  const cls = score<=1?'weak':score<=2?'mid':'strong';
+  const labels = { ar: {weak:'ضعيفة',mid:'متوسطة',strong:'قوية'}, en: {weak:'Weak',mid:'Medium',strong:'Strong'} };
+  bars.forEach((b,i)=>{ b.className='pw-bar '+(i<score?cls:'') });
+  lbl.textContent = labels[currentLang][cls];
+  lbl.style.color = cls==='weak'?'var(--danger)':cls==='mid'?'var(--warn)':'var(--ac3)';
+}
+
+/* ── Login ── */
+function handleLogin(){
+  const method = currentMethod.login;
+  const contact = method==='email'
+    ? document.getElementById('login-email-input').value.trim()
+    : document.getElementById('login-phone-input').value.trim();
+  const pw = document.getElementById('login-pw').value;
+  if(!contact){ showToast(currentLang==='ar'?'أدخل بريدك الإلكتروني أو رقم جوالك':'Enter email or phone','error'); return; }
+  if(method==='email' && pw.length < 1){ showToast(currentLang==='ar'?'أدخل كلمة المرور':'Enter password','error'); return; }
+  setLoading('login-loader','login-btn-txt',true);
+  userInfo = { name: contact.includes('@')?contact.split('@')[0]:'مستخدم', contact };
+  setTimeout(()=>{
+    setLoading('login-loader','login-btn-txt',false);
+    launchOTP(contact, method);
+  }, 1600);
+}
+
+/* ── Register ── */
+function handleRegister(){
+  const name = document.getElementById('reg-name').value.trim();
+  const method = currentMethod.reg;
+  const contact = method==='email'
+    ? document.getElementById('reg-email').value.trim()
+    : document.getElementById('reg-phone').value.trim();
+  const pw = document.getElementById('reg-pw').value;
+  const terms = document.getElementById('terms').checked;
+  if(!name){ showToast(currentLang==='ar'?'أدخل اسمك الكامل':'Enter your full name','error'); return; }
+  if(!contact){ showToast(currentLang==='ar'?'أدخل بريدك أو جوالك':'Enter email or phone','error'); return; }
+  if(pw.length < 6){ showToast(currentLang==='ar'?'كلمة المرور قصيرة جداً':'Password too short','error'); return; }
+  if(!terms){ showToast(currentLang==='ar'?'يجب الموافقة على الشروط':'Accept terms first','error'); return; }
+  setLoading('reg-loader','reg-btn-txt',true);
+  userInfo = { name, contact };
+  setTimeout(()=>{
+    setLoading('reg-loader','reg-btn-txt',false);
+    launchOTP(contact, method);
+  }, 1600);
+}
+
+/* ── Forgot ── */
+function handleForgot(){
+  showToast(currentLang==='ar'?'✅ تم إرسال رابط الاستعادة':'✅ Reset code sent!','success');
+  setTimeout(()=>goToPage('page-login'), 2000);
+}
+
+/* ── Launch OTP ── */
+function launchOTP(contact, method){
+  document.getElementById('otp-destination').textContent = contact;
+  document.getElementById('otp-normal-view').style.display='flex';
+  document.getElementById('otp-success-view').style.display='none';
+  // Clear boxes
+  document.querySelectorAll('.otp-box').forEach(b=>{ b.value=''; b.classList.remove('filled','success','error-box'); });
+  goToPage('page-otp');
+  startTimer();
+  showToast(
+    currentLang==='ar'
+      ? `📱 تم إرسال كود التحقق إلى ${contact}`
+      : `📱 Verification code sent to ${contact}`,
+    'success'
+  );
+  // Focus first box
+  setTimeout(()=>document.querySelectorAll('.otp-box')[0].focus(), 300);
+}
+
+/* ── OTP navigation ── */
+function otpFill(input){
+  input.value = input.value.replace(/[^0-9]/g,'').slice(-1);
+  input.classList.toggle('filled', input.value !== '');
+}
+function otpNav(input, idx){
+  const boxes = document.querySelectorAll('.otp-box');
+  if(event.key === 'Backspace' && !input.value && idx > 0){
+    boxes[idx-1].focus();
+    boxes[idx-1].value='';
+    boxes[idx-1].classList.remove('filled');
+  } else if(input.value && idx < 5){
+    boxes[idx+1].focus();
+  }
+  // Auto verify
+  const full = [...boxes].map(b=>b.value).join('');
+  if(full.length === 6) setTimeout(()=>verifyOTP(), 200);
+}
+
+/* ── Verify OTP ── */
+function verifyOTP(){
+  const boxes = document.querySelectorAll('.otp-box');
+  const code = [...boxes].map(b=>b.value).join('');
+  if(code.length < 6){ showToast(currentLang==='ar'?'أدخل الكود كاملاً':'Enter full code','error'); return; }
+  document.getElementById('otp-loader').style.display='block';
+  setTimeout(()=>{
+    document.getElementById('otp-loader').style.display='none';
+    if(code === '123456'){
+      boxes.forEach(b=>b.classList.add('success'));
+      clearInterval(timerInterval);
+      showToast(currentLang==='ar'?'✅ تم التحقق بنجاح!':'✅ Verified successfully!','success');
+      document.getElementById('otp-normal-view').style.display='none';
+      document.getElementById('otp-success-view').style.display='flex';
+      setTimeout(()=>enterDashboard(), 2000);
+    } else {
+      boxes.forEach(b=>b.classList.add('error-box'));
+      setTimeout(()=>boxes.forEach(b=>{ b.classList.remove('error-box'); b.value=''; b.classList.remove('filled'); }), 700);
+      boxes[0].focus();
+      showToast(currentLang==='ar'?'❌ الكود غير صحيح — جرب 123456':'❌ Wrong code — try 123456','error');
+    }
+  }, 900);
+}
+
+/* ── Resend OTP ── */
+function resendOTP(){
+  if(!otpResendAllowed) return;
+  otpResendAllowed = false;
+  document.getElementById('resend-btn').classList.remove('active');
+  showToast(currentLang==='ar'?'📱 تم إعادة إرسال الكود':'📱 Code resent','success');
+  timerSecs = 60;
+  startTimer();
+  document.querySelectorAll('.otp-box').forEach(b=>{ b.value=''; b.classList.remove('filled','success','error-box'); });
+  document.querySelectorAll('.otp-box')[0].focus();
+}
+
+/* ── Timer ── */
+function startTimer(){
+  clearInterval(timerInterval);
+  timerSecs = 60;
+  otpResendAllowed = false;
+  document.getElementById('resend-btn').classList.remove('active');
+  updateTimerDisplay();
+  timerInterval = setInterval(()=>{
+    timerSecs--;
+    updateTimerDisplay();
+    if(timerSecs <= 0){
+      clearInterval(timerInterval);
+      otpResendAllowed = true;
+      document.getElementById('resend-btn').classList.add('active');
+    }
+  }, 1000);
+}
+function updateTimerDisplay(){
+  const mm = String(Math.floor(timerSecs/60)).padStart(2,'0');
+  const ss = String(timerSecs%60).padStart(2,'0');
+  const t = document.getElementById('timer');
+  const t2 = document.getElementById('timer2');
+  if(t) t.textContent = `${mm}:${ss}`;
+  if(t2) t2.textContent = `${mm}:${ss}`;
+}
+
+/* ── Enter Dashboard ── */
+function enterDashboard(){
+  const name = userInfo.name || 'مستخدم';
+  const first = name.split(' ')[0];
+  document.getElementById('dash-name').textContent = name;
+  document.getElementById('dash-contact').textContent = userInfo.contact;
+  document.getElementById('welcome-name').textContent = first;
+  document.getElementById('welcome-name2').textContent = first;
+  const initials = name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('dash-ava').textContent = initials || 'U';
+  goToPage('page-dash');
+  setTimeout(()=>{ document.getElementById('sto-fill').style.width='42%'; }, 500);
+}
+
+/* ── Logout ── */
+function logout(){
+  clearInterval(timerInterval);
+  userInfo = {name:'',contact:''};
+  goToPage('page-login');
+  showToast(currentLang==='ar'?'👋 تم تسجيل الخروج':'👋 Signed out','success');
+}
+
+/* ── Nav active ── */
+function setNi(el){
+  document.querySelectorAll('.ni').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+}
+
+/* ── Toast ── */
+function showToast(msg, type='success'){
+  const t = document.getElementById('toast');
+  const m = document.getElementById('toast-msg');
+  t.className = 'toast '+(type==='error'?'error2':'success');
+  m.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+/* ── Loading state ── */
+function setLoading(loaderId, txtId, on){
+  document.getElementById(loaderId).style.display = on?'block':'none';
+  document.getElementById(txtId).style.opacity = on?'0':'1';
+}
+
+/* ── Upload drag ── */
+const upz = document.querySelector('.upz');
+if(upz){
+  upz.addEventListener('dragover',e=>{e.preventDefault();upz.style.borderColor='var(--ac3)'});
+  upz.addEventListener('dragleave',()=>upz.style.borderColor='');
+  upz.addEventListener('drop',e=>{e.preventDefault();upz.style.borderColor='';showToast(currentLang==='ar'?'✅ تم رفع الملف بنجاح':'✅ File uploaded!','success')});
+}
+
+/* ── Repo click ── */
+document.querySelectorAll('.rc:not(.nr)').forEach(c=>{
+  c.addEventListener('click',()=>{
+    c.style.borderColor='var(--ac)';
+    setTimeout(()=>c.style.borderColor='',700);
+  });
+});
+
+/* ── Init ── */
+setLang('ar');
+</script>
+</body>
+</html>
